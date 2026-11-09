@@ -42,7 +42,7 @@ class ChurnConfig(BaseModel):
     """Churn definition and modelling choices."""
 
     horizon_days: int = Field(30, ge=7)  # churn = no order in the next N days
-    active_window_days: int = Field(60, ge=14)  # population = ordered in the last N days
+    active_window_days: int = Field(30, ge=14)  # population = ordered in the last N days
     snapshot_freq: str = "MS"  # monthly snapshots for building training data
     min_tenure_days: int = 7
     validation_snapshots: int = 2  # most-recent fully-labelled snapshots held out
