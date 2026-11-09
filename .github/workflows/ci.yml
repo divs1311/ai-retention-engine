@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - run: uv venv -p 3.10 && uv pip install --resolution lowest-direct -e ".[api,dev]"
-      - run: RE_LOG_LEVEL=WARNING uv run --no-sync pytest
+      - run: RE_LOG_LEVEL=WARNING .venv/bin/pytest
 
   pipeline:
     name: End-to-end pipeline smoke test
