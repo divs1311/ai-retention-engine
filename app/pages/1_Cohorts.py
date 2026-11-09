@@ -6,12 +6,13 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _shared import SEQUENTIAL, SERIES, load_artifacts, page_setup, show, sidebar_filters, style
 from retention_engine.analytics.cohorts import (
     average_retention_curve,
     cohort_counts,
     retention_matrix,
 )
+
+from _shared import SEQUENTIAL, SERIES, load_artifacts, page_setup, show, sidebar_filters, style
 
 page_setup("Cohorts", "📈")
 art = load_artifacts()

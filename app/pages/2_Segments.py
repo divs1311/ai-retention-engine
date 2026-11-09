@@ -5,8 +5,9 @@ from __future__ import annotations
 import plotly.graph_objects as go
 import streamlit as st
 
-from _shared import SERIES, load_artifacts, money, page_setup, show, sidebar_filters, stat, style
 from retention_engine.analytics.rfm import compute_rfm, segment_summary
+
+from _shared import SERIES, load_artifacts, money, page_setup, show, sidebar_filters, stat, style
 
 page_setup("Segments", "🧩")
 art = load_artifacts()

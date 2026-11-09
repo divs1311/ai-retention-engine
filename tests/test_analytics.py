@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from conftest import make_orders
 from retention_engine.analytics.cohorts import (
     average_retention_curve,
     category_breadth_retention,
@@ -12,6 +11,8 @@ from retention_engine.analytics.cohorts import (
 )
 from retention_engine.analytics.kpis import kpi_summary, weekly_trends
 from retention_engine.analytics.rfm import SEGMENT_ORDER, _segment_for, compute_rfm, segment_summary
+
+from conftest import make_orders
 
 
 @pytest.fixture

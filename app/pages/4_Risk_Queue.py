@@ -5,8 +5,9 @@ from __future__ import annotations
 import plotly.graph_objects as go
 import streamlit as st
 
-from _shared import SERIES, STATUS, load_artifacts, money, page_setup, show, style, tier_pill
 from retention_engine.crm.schemas import LifecycleStage
+
+from _shared import SERIES, STATUS, load_artifacts, money, page_setup, show, style, tier_pill
 
 page_setup("Risk queue", "🚨")
 art = load_artifacts()

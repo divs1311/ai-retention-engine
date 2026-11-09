@@ -4,12 +4,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from conftest import make_orders, make_users
 from retention_engine.churn import model as churn_model
 from retention_engine.churn.evaluate import expected_calibration_error, gains_table, metrics
 from retention_engine.churn.explain import reasons_for
 from retention_engine.churn.features import FEATURES, build_features, build_labels
 from retention_engine.config import ChurnConfig
+
+from conftest import make_orders, make_users
 
 
 def test_features_ignore_the_future(dataset):

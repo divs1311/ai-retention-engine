@@ -6,9 +6,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from _shared import CUR, SERIES, load_artifacts, money, page_setup, show, sidebar_filters, style
 from retention_engine.analytics.cohorts import category_breadth_retention
 from retention_engine.analytics.kpis import category_mix, kpi_summary, weekly_trends
+
+from _shared import CUR, SERIES, load_artifacts, money, page_setup, show, sidebar_filters, style
 
 page_setup("Overview")
 art = load_artifacts()

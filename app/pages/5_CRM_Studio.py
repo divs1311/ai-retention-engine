@@ -8,11 +8,12 @@ import json
 import pandas as pd
 import streamlit as st
 
-from _shared import load_artifacts, money, page_setup, settings
 from retention_engine.crm.generator import CampaignGenerator
 from retention_engine.crm.providers import available_providers, get_provider
 from retention_engine.crm.schemas import AudienceBrief
 from retention_engine.pipeline import audiences
+
+from _shared import load_artifacts, money, page_setup, settings
 
 page_setup("CRM studio", "✉️")
 art = load_artifacts()

@@ -58,6 +58,10 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "PD", "NPY", "RUF"]
 # E501: line width is owned by `ruff format`; long user-facing strings are left intact.
 ignore = ["E501", "PD010", "PD011", "RUF001", "RUF002", "RUF003", "B008"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["retention_engine"]
+known-local-folder = ["conftest", "_shared"]
+
 [tool.ruff.lint.per-file-ignores]
 "app/**" = ["E402"]
 "tests/**" = ["PD"]
