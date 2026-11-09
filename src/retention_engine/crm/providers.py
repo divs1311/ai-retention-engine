@@ -117,12 +117,16 @@ def available_providers() -> list[str]:
 def get_provider(name: str = "auto", cfg: LLMConfig | None = None) -> BaseProvider:
     cfg = cfg or LLMConfig()
     if name == "auto":
-        name = cfg.provider if cfg.provider != "auto" else (
-            "anthropic"
-            if os.getenv("ANTHROPIC_API_KEY")
-            else "openai"
-            if os.getenv("OPENAI_API_KEY")
-            else "template"
+        name = (
+            cfg.provider
+            if cfg.provider != "auto"
+            else (
+                "anthropic"
+                if os.getenv("ANTHROPIC_API_KEY")
+                else "openai"
+                if os.getenv("OPENAI_API_KEY")
+                else "template"
+            )
         )
     if name == "anthropic":
         return AnthropicProvider(cfg)

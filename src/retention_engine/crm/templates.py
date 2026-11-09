@@ -18,7 +18,13 @@ REASON_OPENERS: dict[str, str] = {
     "NONE": "Your regular essentials are a tap away.",
 }
 
-ADJACENT_CATEGORIES = ["staples", "household", "personal care", "dairy bread eggs", "fruits vegetables"]
+ADJACENT_CATEGORIES = [
+    "staples",
+    "household",
+    "personal care",
+    "dairy bread eggs",
+    "fruits vegetables",
+]
 
 
 def offer_line(inc: Incentive, currency: str = "₹") -> str:

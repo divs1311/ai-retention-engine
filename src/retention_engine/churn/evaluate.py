@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import (
@@ -51,12 +53,12 @@ def metrics(y: np.ndarray, p: np.ndarray) -> dict[str, float]:
         "base_rate": float(y.mean()),
         "precision_at_top10pct": float(y[top10].mean()),
         "lift_at_top10pct": float(y[top10].mean() / y.mean()),
-        "recall_at_top20pct": float(y[top20].sum() / y.sum()),
+        "recall_at_top20pct": float(y[top20].sum()) / float(y.sum()),
         "n": len(y),
     }
 
 
-def curves(y: np.ndarray, p: np.ndarray, n_points: int = 60) -> dict[str, dict[str, list[float]]]:
+def curves(y: np.ndarray, p: np.ndarray, n_points: int = 60) -> dict[str, dict[str, list[Any]]]:
     """Downsampled curves for plotting in the dashboard (kept small for the model card)."""
 
     def _thin(*arrays: np.ndarray) -> list[list[float]]:

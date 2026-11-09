@@ -68,7 +68,9 @@ def run_campaigns(
 ) -> list[Campaign]:
     settings = settings or get_settings()
     _, orders = load_dataset(settings)
-    scores = read_table(settings.scores_path) if settings.scores_path.exists() else run_score(settings)
+    scores = (
+        read_table(settings.scores_path) if settings.scores_path.exists() else run_score(settings)
+    )
     briefs = audiences(scores, orders, settings)[:limit]
     gen = CampaignGenerator(
         get_provider(provider, settings.llm), settings.llm, cache_dir=settings.llm_cache_dir
@@ -77,7 +79,12 @@ def run_campaigns(
     settings.campaigns_path.write_text(
         json.dumps([c.model_dump(mode="json") for c in campaigns], indent=2, ensure_ascii=False)
     )
-    log.info("Generated %d campaigns with %s → %s", len(campaigns), gen.provider.name, settings.campaigns_path)
+    log.info(
+        "Generated %d campaigns with %s → %s",
+        len(campaigns),
+        gen.provider.name,
+        settings.campaigns_path,
+    )
     return campaigns
 
 

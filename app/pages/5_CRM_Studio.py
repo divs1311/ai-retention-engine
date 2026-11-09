@@ -7,8 +7,8 @@ import json
 
 import pandas as pd
 import streamlit as st
-from _shared import load_artifacts, money, page_setup, settings
 
+from _shared import load_artifacts, money, page_setup, settings
 from retention_engine.crm.generator import CampaignGenerator
 from retention_engine.crm.providers import available_providers, get_provider
 from retention_engine.crm.schemas import AudienceBrief
@@ -53,7 +53,9 @@ st.dataframe(
     use_container_width=True,
     column_config={
         "value_at_risk": st.column_config.NumberColumn("Value at risk", format="%.0f"),
-        "avg_churn_p": st.column_config.ProgressColumn("Avg churn p", format="%.2f", min_value=0, max_value=1),
+        "avg_churn_p": st.column_config.ProgressColumn(
+            "Avg churn p", format="%.2f", min_value=0, max_value=1
+        ),
     },
 )
 
@@ -62,19 +64,27 @@ c1, c2 = st.columns([3, 1])
 choice = c1.selectbox(
     "Audience",
     range(len(briefs)),
-    format_func=lambda i: f"{briefs[i].stage.label} · {briefs[i].primary_reason.replace('_', ' ').title()} "
-    f"({briefs[i].size} users, {money(briefs[i].value_at_risk)} at risk)",
+    format_func=lambda i: (
+        f"{briefs[i].stage.label} · {briefs[i].primary_reason.replace('_', ' ').title()} "
+        f"({briefs[i].size} users, {money(briefs[i].value_at_risk)} at risk)"
+    ),
 )
-provider = c2.selectbox("Provider", provs[::-1], help="Set ANTHROPIC_API_KEY or OPENAI_API_KEY to enable LLM providers.")
+provider = c2.selectbox(
+    "Provider", provs[::-1], help="Set ANTHROPIC_API_KEY or OPENAI_API_KEY to enable LLM providers."
+)
 if provs == ["template"]:
-    st.caption("No API key detected — using the offline template provider. Add a key to `.env` or Streamlit secrets to use Claude or GPT.")
+    st.caption(
+        "No API key detected — using the offline template provider. Add a key to `.env` or Streamlit secrets to use Claude or GPT."
+    )
 
 brief = briefs[choice]
 with st.expander("Audience brief sent to the model"):
     st.json(brief.model_dump(mode="json"))
 
 if st.button("Generate campaign", type="primary"):
-    gen = CampaignGenerator(get_provider(provider, settings.llm), settings.llm, cache_dir=settings.llm_cache_dir)
+    gen = CampaignGenerator(
+        get_provider(provider, settings.llm), settings.llm, cache_dir=settings.llm_cache_dir
+    )
     with st.spinner(f"Generating with {provider}…"):
         st.session_state["campaign"] = gen.generate(brief)
 
@@ -85,14 +95,23 @@ if camp and camp.brief.audience_id == brief.audience_id:
     p, w, e = st.columns(3)
     with p:
         st.markdown("**Push notification**")
-        st.markdown(f'<div class="re-card"><b>{esc(cp.push_title)}</b><br>{esc(cp.push_body)}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="re-card"><b>{esc(cp.push_title)}</b><br>{esc(cp.push_body)}</div>',
+            unsafe_allow_html=True,
+        )
         st.markdown(f"**CTA:** {html.escape(cp.cta)}")
     with w:
         st.markdown("**WhatsApp**")
-        st.markdown(f'<div class="re-card" style="background:rgba(27,175,122,.08)">{esc(cp.whatsapp_message)}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="re-card" style="background:rgba(27,175,122,.08)">{esc(cp.whatsapp_message)}</div>',
+            unsafe_allow_html=True,
+        )
     with e:
         st.markdown("**Email**")
-        st.markdown(f'<div class="re-card"><b>{esc(cp.email_subject)}</b><br><span style="opacity:.7">{esc(cp.email_preheader)}</span></div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="re-card"><b>{esc(cp.email_subject)}</b><br><span style="opacity:.7">{esc(cp.email_preheader)}</span></div>',
+            unsafe_allow_html=True,
+        )
 
     g = camp.guardrails
     status = "✅ Passed all guardrails" if g.passed else "❌ Guardrail violations"

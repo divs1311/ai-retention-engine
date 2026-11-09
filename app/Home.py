@@ -5,8 +5,8 @@ from __future__ import annotations
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from _shared import CUR, SERIES, load_artifacts, money, page_setup, show, sidebar_filters, style
 
+from _shared import CUR, SERIES, load_artifacts, money, page_setup, show, sidebar_filters, style
 from retention_engine.analytics.cohorts import category_breadth_retention
 from retention_engine.analytics.kpis import category_mix, kpi_summary, weekly_trends
 
@@ -39,11 +39,32 @@ def delta(a: float, b: float) -> str | None:
 
 
 c = st.columns(5)
-c[0].metric("GMV (30d)", money(cur["order_amount"].sum()), delta(cur["order_amount"].sum(), prev["order_amount"].sum()))
-c[1].metric("Active users (30d)", f"{cur['user_id'].nunique():,}", delta(cur["user_id"].nunique(), prev["user_id"].nunique()))
-c[2].metric("AOV (30d)", money(cur["order_amount"].mean()), delta(cur["order_amount"].mean(), prev["order_amount"].mean()))
-c[3].metric("M1 retention", f"{k.m1_retention_pct:.1f}%", help="Cohort-size-weighted share of users who order again in their 2nd calendar month.")
-c[4].metric("Late deliveries (30d)", f"{cur['is_late'].mean() * 100:.1f}%", delta(cur["is_late"].mean(), prev["is_late"].mean()), delta_color="inverse")
+c[0].metric(
+    "GMV (30d)",
+    money(cur["order_amount"].sum()),
+    delta(cur["order_amount"].sum(), prev["order_amount"].sum()),
+)
+c[1].metric(
+    "Active users (30d)",
+    f"{cur['user_id'].nunique():,}",
+    delta(cur["user_id"].nunique(), prev["user_id"].nunique()),
+)
+c[2].metric(
+    "AOV (30d)",
+    money(cur["order_amount"].mean()),
+    delta(cur["order_amount"].mean(), prev["order_amount"].mean()),
+)
+c[3].metric(
+    "M1 retention",
+    f"{k.m1_retention_pct:.1f}%",
+    help="Cohort-size-weighted share of users who order again in their 2nd calendar month.",
+)
+c[4].metric(
+    "Late deliveries (30d)",
+    f"{cur['is_late'].mean() * 100:.1f}%",
+    delta(cur["is_late"].mean(), prev["is_late"].mean()),
+    delta_color="inverse",
+)
 
 # --- Insight callouts ---------------------------------------------------------------------
 scores = art.scores[art.scores["user_id"].isin(orders["user_id"])]
@@ -83,28 +104,54 @@ left, right = st.columns(2)
 with left:
     fig = go.Figure(
         go.Scatter(
-            x=w["week"], y=w["gmv"], mode="lines", line_color=SERIES[0], name="GMV",
-            fill="tozeroy", fillcolor="rgba(42,120,214,.10)",
+            x=w["week"],
+            y=w["gmv"],
+            mode="lines",
+            line_color=SERIES[0],
+            name="GMV",
+            fill="tozeroy",
+            fillcolor="rgba(42,120,214,.10)",
             hovertemplate="Week of %{x|%d %b %Y}<br>GMV %{y:,.0f}<extra></extra>",
         )
     )
     show(style(fig, title="Weekly GMV", yaxis_title=f"GMV ({CUR})"))
 with right:
     fig = go.Figure()
-    fig.add_bar(x=w["week"], y=w["returning_users"], name="Returning", marker_color=SERIES[0],
-                hovertemplate="%{y:,} returning<extra></extra>")
-    fig.add_bar(x=w["week"], y=w["new_users"], name="New", marker_color=SERIES[1],
-                hovertemplate="%{y:,} new<extra></extra>")
-    show(style(fig, title="Weekly active users — new vs returning", barmode="stack", hovermode="x unified"))
+    fig.add_bar(
+        x=w["week"],
+        y=w["returning_users"],
+        name="Returning",
+        marker_color=SERIES[0],
+        hovertemplate="%{y:,} returning<extra></extra>",
+    )
+    fig.add_bar(
+        x=w["week"],
+        y=w["new_users"],
+        name="New",
+        marker_color=SERIES[1],
+        hovertemplate="%{y:,} new<extra></extra>",
+    )
+    show(
+        style(
+            fig,
+            title="Weekly active users — new vs returning",
+            barmode="stack",
+            hovermode="x unified",
+        )
+    )
 
 left, right = st.columns(2)
 with left:
     mix = category_mix(orders).sort_values("gmv")
     fig = go.Figure(
         go.Bar(
-            x=mix["gmv"], y=mix["primary_category"].str.replace("_", " "), orientation="h",
-            marker_color=SERIES[0], text=mix["gmv_share_pct"].map(lambda v: f"{v:.0f}%"),
-            textposition="outside", cliponaxis=False,
+            x=mix["gmv"],
+            y=mix["primary_category"].str.replace("_", " "),
+            orientation="h",
+            marker_color=SERIES[0],
+            text=mix["gmv_share_pct"].map(lambda v: f"{v:.0f}%"),
+            textposition="outside",
+            cliponaxis=False,
             hovertemplate="%{y}<br>GMV %{x:,.0f}<extra></extra>",
         )
     )
@@ -112,16 +159,26 @@ with left:
 with right:
     fig = go.Figure(
         go.Bar(
-            x=breadth["breadth_bucket"].astype(str), y=breadth["retention_pct"],
-            marker_color=SERIES[0], text=breadth["retention_pct"].map(lambda v: f"{v:.0f}%"),
-            textposition="outside", cliponaxis=False,
+            x=breadth["breadth_bucket"].astype(str),
+            y=breadth["retention_pct"],
+            marker_color=SERIES[0],
+            text=breadth["retention_pct"].map(lambda v: f"{v:.0f}%"),
+            textposition="outside",
+            cliponaxis=False,
             customdata=breadth[["users", "lift_vs_avg"]],
             hovertemplate="%{x} categories<br>%{y:.1f}% retained<br>%{customdata[0]:,} users · "
             "%{customdata[1]:.2f}× avg<extra></extra>",
         )
     )
-    show(style(fig, title="Day 60–90 retention by month-1 basket breadth", height=380,
-               xaxis_title="Avg categories per order in first 30 days", yaxis_title="% retained"))
+    show(
+        style(
+            fig,
+            title="Day 60–90 retention by month-1 basket breadth",
+            height=380,
+            xaxis_title="Avg categories per order in first 30 days",
+            yaxis_title="% retained",
+        )
+    )
 
 with st.expander("About this project"):
     st.markdown(

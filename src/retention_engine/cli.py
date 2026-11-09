@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from pathlib import Path
 
 import typer
 from rich.console import Console
@@ -12,7 +11,7 @@ from rich.table import Table
 
 from retention_engine import __version__, pipeline
 from retention_engine.analytics.kpis import kpi_summary
-from retention_engine.config import get_settings
+from retention_engine.config import ROOT_DIR, get_settings
 from retention_engine.data.io import load_dataset
 
 app = typer.Typer(
@@ -25,13 +24,19 @@ console = Console()
 ProviderOpt = typer.Option("auto", "--provider", "-p", help="auto | anthropic | openai | template")
 
 
-@app.callback()
-def _main(
-    version: bool = typer.Option(False, "--version", help="Show version and exit."),
-) -> None:
-    if version:
+def _version(value: bool) -> None:
+    if value:
         console.print(f"retention-engine {__version__}")
         raise typer.Exit()
+
+
+@app.callback()
+def _main(
+    version: bool = typer.Option(
+        False, "--version", callback=_version, is_eager=True, help="Show version and exit."
+    ),
+) -> None:
+    """Quick-commerce retention intelligence."""
 
 
 @app.command()
@@ -135,7 +140,10 @@ def api(host: str = "0.0.0.0", port: int = 8000, reload: bool = False) -> None:
 @app.command()
 def dashboard(port: int = 8501) -> None:
     """Launch the Streamlit dashboard."""
-    app_path = Path(__file__).resolve().parents[2] / "app" / "Home.py"
+    app_path = ROOT_DIR / "app" / "Home.py"
+    if not app_path.exists():
+        console.print(f"[red]Dashboard not found at {app_path}[/] — run from the repository root.")
+        raise typer.Exit(1)
     raise typer.Exit(
         subprocess.call(
             [sys.executable, "-m", "streamlit", "run", str(app_path), "--server.port", str(port)]

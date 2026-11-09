@@ -8,6 +8,7 @@ Interactive docs at ``/docs``. If ``RE_API_KEY`` is set, every ``/v1`` route req
 from __future__ import annotations
 
 import os
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Annotated, Any
 
@@ -35,7 +36,7 @@ from retention_engine.pipeline import audiences, ensure_artifacts
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):  # type: ignore[no-untyped-def]
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     art = ensure_artifacts(settings)
     app.state.settings = settings
@@ -85,7 +86,7 @@ def kpis(request: Request) -> dict[str, Any]:
 
 
 @app.get("/v1/segments", tags=["analytics"], dependencies=[Auth])
-def segments(request: Request) -> list[dict[str, Any]]:
+def segments(request: Request) -> list[dict[Any, Any]]:
     rfm = compute_rfm(request.app.state.art.orders)
     return segment_summary(rfm).to_dict(orient="records")
 

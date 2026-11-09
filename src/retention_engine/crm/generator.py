@@ -34,7 +34,12 @@ class CampaignGenerator:
     # -- caching ------------------------------------------------------------------------
     def _cache_key(self, brief: AudienceBrief) -> str:
         payload = json.dumps(
-            [self.provider.name, self.provider.model, PROMPT_VERSION, brief.model_dump(mode="json")],
+            [
+                self.provider.name,
+                self.provider.model,
+                PROMPT_VERSION,
+                brief.model_dump(mode="json"),
+            ],
             sort_keys=True,
         )
         return hashlib.sha256(payload.encode()).hexdigest()[:24]
@@ -101,7 +106,9 @@ class CampaignGenerator:
                 passed=not violations, violations=violations, warnings=warnings
             ),
             attempts=attempts,
-            fallback_reason=fallback_reason if provider_name == "template" and self.provider.name != "template" else None,
+            fallback_reason=fallback_reason
+            if provider_name == "template" and self.provider.name != "template"
+            else None,
             latency_ms=int((time.perf_counter() - t0) * 1000),
         )
         if campaign.guardrails.passed:

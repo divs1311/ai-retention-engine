@@ -12,10 +12,12 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
+_SOURCE_ROOT = Path(__file__).resolve().parents[2]
+# Source checkout → keep data next to the repo; installed wheel → use the working directory.
+ROOT_DIR = _SOURCE_ROOT if (_SOURCE_ROOT / "pyproject.toml").exists() else Path.cwd()
 
 
 class SimulationConfig(BaseModel):
@@ -31,7 +33,7 @@ class SimulationConfig(BaseModel):
 
     @field_validator("end_date")
     @classmethod
-    def _end_after_start(cls, v: date, info) -> date:  # type: ignore[no-untyped-def]
+    def _end_after_start(cls, v: date, info: ValidationInfo) -> date:
         start = info.data.get("start_date")
         if start and v <= start:
             raise ValueError("end_date must be after start_date")

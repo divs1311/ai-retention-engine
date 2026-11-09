@@ -100,7 +100,10 @@ def build_features(
     f["freq_trend"] = (f["orders_30d"] + 1) / (prior_rate + 1)
 
     # Cadence: inter-order gaps across the full history.
-    gaps = hist.sort_values("order_ts").groupby("user_id")["order_ts"].diff().dt.total_seconds() / 86400
+    gaps = (
+        hist.sort_values("order_ts").groupby("user_id")["order_ts"].diff().dt.total_seconds()
+        / 86400
+    )
     gap_stats = gaps.groupby(hist.sort_values("order_ts")["user_id"]).agg(["mean", "std"])
     f["mean_gap_days"] = gap_stats["mean"]
     f["std_gap_days"] = gap_stats["std"]
@@ -123,7 +126,12 @@ def build_features(
     f["weekend_share"] = g["order_ts"].apply(lambda s: (s.dt.dayofweek >= 5).mean())
 
     # Users with no orders in the 90d window (possible when active_window > 90).
-    fill_zero = ["late_rate_90d", "late_orders_30d", "discount_share_90d", "distinct_categories_90d"]
+    fill_zero = [
+        "late_rate_90d",
+        "late_orders_30d",
+        "discount_share_90d",
+        "distinct_categories_90d",
+    ]
     f[fill_zero] = f[fill_zero].fillna(0)
     f["avg_delivery_min_90d"] = f["avg_delivery_min_90d"].fillna(g["delivery_minutes"].mean())
     f["avg_category_width_90d"] = f["avg_category_width_90d"].fillna(g["category_width"].mean())

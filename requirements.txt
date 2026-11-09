@@ -1,0 +1,3 @@
+# Used by Streamlit Community Cloud (entrypoint: app/Home.py).
+# For local development prefer: pip install -e ".[all,dev]"
+.[dashboard,llm]

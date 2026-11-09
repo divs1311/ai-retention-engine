@@ -14,8 +14,8 @@ _SRC = Path(__file__).resolve().parents[1] / "src"
 if _SRC.exists() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-from retention_engine.config import get_settings  # noqa: E402
-from retention_engine.pipeline import Artifacts, ensure_artifacts  # noqa: E402
+from retention_engine.config import get_settings
+from retention_engine.pipeline import Artifacts, ensure_artifacts
 
 # Validated categorical order (fixed — colour follows the entity, never its rank).
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
@@ -60,7 +60,9 @@ def sidebar_filters(orders: pd.DataFrame, users: pd.DataFrame) -> pd.DataFrame:
     with st.sidebar:
         st.header("Filters")
         cities = st.multiselect("City", sorted(users["city"].unique()))
-        channels = st.multiselect("Acquisition channel", sorted(users["acquisition_channel"].unique()))
+        channels = st.multiselect(
+            "Acquisition channel", sorted(users["acquisition_channel"].unique())
+        )
         st.caption("Empty = all. Filters apply to analytics pages.")
     u = users
     if cities:
@@ -111,4 +113,6 @@ def stat(col, label: str, value: str, note: str | None = None, help: str | None 
 
 def tier_pill(tier: str) -> str:
     icon = {"high": "▲", "medium": "◆", "low": "▼"}.get(tier, "")
-    return f'<span class="re-pill" style="background:{STATUS.get(tier, MUTED)}">{icon} {tier}</span>'
+    return (
+        f'<span class="re-pill" style="background:{STATUS.get(tier, MUTED)}">{icon} {tier}</span>'
+    )

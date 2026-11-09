@@ -201,14 +201,14 @@ def _heuristic_baselines(va: pd.DataFrame, model_p: np.ndarray) -> dict[str, dic
     rule = {
         "flagged_share": round(float(flagged.mean()), 4),
         "precision": round(float(y[flagged].mean()) if flagged.any() else 0.0, 4),
-        "recall": round(float(y[flagged].sum() / y.sum()), 4),
+        "recall": round(float(y[flagged].sum()) / float(y.sum()), 4),
     }
     k = int(flagged.sum())
     top = np.argsort(-model_p)[:k]
     same_budget = {
         "flagged_share": rule["flagged_share"],
         "precision": round(float(y[top].mean()) if k else 0.0, 4),
-        "recall": round(float(y[top].sum() / y.sum()), 4),
+        "recall": round(float(y[top].sum()) / float(y.sum()), 4),
     }
     return {
         "recency_ranking": ranking,

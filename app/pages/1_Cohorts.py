@@ -5,8 +5,8 @@ from __future__ import annotations
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-from _shared import SEQUENTIAL, SERIES, load_artifacts, page_setup, show, sidebar_filters, style
 
+from _shared import SEQUENTIAL, SERIES, load_artifacts, page_setup, show, sidebar_filters, style
 from retention_engine.analytics.cohorts import (
     average_retention_curve,
     cohort_counts,
@@ -66,17 +66,27 @@ fig = go.Figure(
 fig.update_yaxes(autorange="reversed")
 show(style(fig, height=max(420, 26 * len(mat)), title=f"{metric.title()} retention by cohort (%)"))
 if metric == "revenue":
-    st.caption("Revenue retention can exceed 100% when surviving users spend more than the cohort did in month 0.")
+    st.caption(
+        "Revenue retention can exceed 100% when surviving users spend more than the cohort did in month 0."
+    )
 
 st.subheader("Average retention curve")
 st.caption("Cohort-size-weighted, using only observed cells.")
-split = st.radio("Compare by", ["None", "acquisition_channel", "city", "signup_promo"], horizontal=True)
+split = st.radio(
+    "Compare by", ["None", "acquisition_channel", "city", "signup_promo"], horizontal=True
+)
 fig = go.Figure()
 if split == "None":
     curve = average_retention_curve(orders, metric)
-    fig.add_scatter(x=curve.index, y=curve.values, mode="lines+markers", name="All users",
-                    line_color=SERIES[0], marker_size=8,
-                    hovertemplate="M%{x}: %{y:.1f}%<extra></extra>")
+    fig.add_scatter(
+        x=curve.index,
+        y=curve.values,
+        mode="lines+markers",
+        name="All users",
+        line_color=SERIES[0],
+        marker_size=8,
+        hovertemplate="M%{x}: %{y:.1f}%<extra></extra>",
+    )
 else:
     groups = art.users.set_index("user_id")[split]
     values = sorted(groups.unique(), key=str)
@@ -85,11 +95,23 @@ else:
         if sub["user_id"].nunique() < 50:
             continue
         curve = average_retention_curve(sub, metric)
-        name = {True: "Promo-acquired", False: "No promo"}.get(g, str(g)) if split == "signup_promo" else str(g)
-        fig.add_scatter(x=curve.index, y=curve.values, mode="lines", name=name,
-                        line_color=SERIES[i], hovertemplate=f"{name} · M%{{x}}: %{{y:.1f}}%<extra></extra>")
+        name = (
+            {True: "Promo-acquired", False: "No promo"}.get(g, str(g))
+            if split == "signup_promo"
+            else str(g)
+        )
+        fig.add_scatter(
+            x=curve.index,
+            y=curve.values,
+            mode="lines",
+            name=name,
+            line_color=SERIES[i],
+            hovertemplate=f"{name} · M%{{x}}: %{{y:.1f}}%<extra></extra>",
+        )
 fig.update_xaxes(range=[-0.3, max_months + 0.3], dtick=1, title="Months since acquisition")
-fig.update_yaxes(title="% of cohort", range=[0, 105] if metric == "users" else None, rangemode="tozero")
+fig.update_yaxes(
+    title="% of cohort", range=[0, 105] if metric == "users" else None, rangemode="tozero"
+)
 show(style(fig, height=420, hovermode="x unified"))
 
 with st.expander("Table view"):
