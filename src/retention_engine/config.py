@@ -26,7 +26,7 @@ class SimulationConfig(BaseModel):
     start_date: date = date(2025, 1, 1)
     end_date: date = date(2026, 6, 30)
     # Fraction of the window during which new users can sign up (rest is observation tail).
-    signup_window_frac: float = Field(0.9, gt=0, le=1)
+    signup_window_frac: float = Field(1.0, gt=0, le=1)
     late_delivery_minutes: int = 15  # the "10-minute delivery" promise, plus grace
 
     @field_validator("end_date")
