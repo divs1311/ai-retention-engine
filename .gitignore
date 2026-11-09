@@ -1,5 +1,30 @@
-venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Secrets
 .env
 .streamlit/secrets.toml
+
+# Generated data & model artifacts (reproducible via `retention-engine pipeline`)
+/data/
+/artifacts/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
